@@ -52,8 +52,7 @@ export default function PendingPage() {
             Pending approval
           </h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Your account has been created and is awaiting approval by a super
-            admin.
+            Your account has been created and is awaiting approval by a super admin.
           </p>
 
           <div className="mt-6 space-y-3 text-left rounded-lg bg-blue-50 p-4 text-sm dark:bg-blue-900/30">
@@ -71,7 +70,8 @@ export default function PendingPage() {
               </li>
               <li className="flex gap-2">
                 <span>3.</span>
-                <span>Your account status will change to "active"</span>
+                <span>Your account status will change to </span>
+                <span className="font-semibold">active</span>
               </li>
               <li className="flex gap-2">
                 <span>4.</span>
