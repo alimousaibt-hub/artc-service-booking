@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Profile, UserRole, UserStatus } from "@/types/database";
-import { Check, X, Trash2 } from "lucide-react";
+import { Check, X, Trash2 as _Trash2 } from "lucide-react";
 
 export default function AdminUsersPage() {
   const supabase = createClient();
