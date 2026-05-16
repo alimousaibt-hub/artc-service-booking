@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
         role: "crm_agent" as UserRole,
         subscription_expires_at: expiryDate.toISOString(),
         approved_at: new Date().toISOString(),
-        approved_by: currentUser?.id,
+        approved_by: currentUser?.id ?? null,
       })
       .eq("id", userId);
 
@@ -80,7 +80,7 @@ export default function AdminUsersPage() {
               role: "crm_agent",
               subscription_expires_at: expiryDate.toISOString(),
               approved_at: new Date().toISOString(),
-              approved_by: currentUser?.id,
+              approved_by: currentUser?.id ?? null,
             }
           : u
       )
