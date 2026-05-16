@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Profile, UserRole, UserStatus } from "@/types/database";
-import { Check, X, Trash2 as _Trash2 } from "lucide-react";
+import { Check, X, Trash2 } from "lucide-react";
 
 export default function AdminUsersPage() {
   const supabase = createClient();
@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
         role: "crm_agent" as UserRole,
         subscription_expires_at: expiryDate.toISOString(),
         approved_at: new Date().toISOString(),
-        approved_by: currentUser?.id ?? null,
+        approved_by: currentUser?.id,
       })
       .eq("id", userId);
 
@@ -80,7 +80,7 @@ export default function AdminUsersPage() {
               role: "crm_agent",
               subscription_expires_at: expiryDate.toISOString(),
               approved_at: new Date().toISOString(),
-              approved_by: currentUser?.id ?? null,
+              approved_by: currentUser?.id,
             }
           : u
       )

@@ -69,24 +69,30 @@ export default function DashboardPage() {
 
           <div className="card">
             <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-50">
-              → Phase 2 Preview
+              ✓ Phase 2 Complete
             </h2>
             <div className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-400">
               <p className="flex items-center gap-2">
-                <span className="text-slate-400">→</span> Branch management
+                <span className="text-green-600">✓</span> Branch management
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-slate-400">→</span> Service advisors
+                <span className="text-green-600">✓</span> Service advisors
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-slate-400">→</span> Booking calendar
+                <span className="text-green-600">✓</span> Booking calendar
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-slate-400">→</span> Create / edit appt
+                <span className="text-green-600">✓</span> Create / edit appointments
               </p>
               <p className="flex items-center gap-2">
-                <span className="text-slate-400">→</span> Month switcher
+                <span className="text-green-600">✓</span> Customer search
               </p>
+              <p className="flex items-center gap-2">
+                <span className="text-green-600">✓</span> Ghost records
+              </p>
+            </div>
+            <div className="mt-4">
+              <a href="/bookings" className="btn btn-primary inline-flex text-sm">Open Bookings →</a>
             </div>
           </div>
         </div>

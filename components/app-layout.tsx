@@ -38,6 +38,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       }
 
       setProfile(profileData as Profile);
+
+      // Redirect advisors away from generic dashboard to their own view
+      if (profileData.role === "advisor" && pathname === "/dashboard") {
+        router.push("/advisor");
+        return;
+      }
+
       setLoading(false);
     };
 
@@ -89,10 +96,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             Dashboard
           </NavLink>
 
-          <NavLink href="/bookings" active={pathname.startsWith("/bookings")}>
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-            Bookings
-          </NavLink>
+          {profile?.role === "advisor" ? (
+            <NavLink href="/advisor" active={pathname.startsWith("/advisor")}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              My appointments
+            </NavLink>
+          ) : (
+            <NavLink href="/bookings" active={pathname.startsWith("/bookings")}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              Bookings
+            </NavLink>
+          )}
 
           {isAdmin && (
             <>
