@@ -71,7 +71,7 @@ export default function PendingPage() {
               </li>
               <li className="flex gap-2">
                 <span>3.</span>
-                <span>Your account status will change to "active"</span>
+                <span>Your account status will change to &ldquo;active&rdquo;</span>
               </li>
               <li className="flex gap-2">
                 <span>4.</span>
