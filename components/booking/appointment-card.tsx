@@ -1,7 +1,7 @@
 "use client";
 
 import { STATUS_COLORS, STATUS_LABELS, formatTime, displayPlate, formatDateDisplay } from "@/lib/booking-helpers";
-import { Edit2, Clock, Car, Phone, ArrowRight, CheckCircle, XCircle, UserX, Ban } from "lucide-react";
+import { Edit2, Clock, Car, Phone, ArrowRight, CheckCircle, UserX, Ban, Trash2 } from "lucide-react";
 
 interface Appointment {
   id: string;
@@ -30,6 +30,8 @@ interface AppointmentCardProps {
   onReschedule?: () => void;
   onAction?: (action: "confirm" | "complete" | "no_show") => void;
   onGoToRescheduled?: (id: string) => void;
+  canDeleteGhost?: boolean;
+  onDeleteGhost?: () => void;
 }
 
 export function AppointmentCard({
@@ -41,6 +43,8 @@ export function AppointmentCard({
   onReschedule,
   onAction,
   onGoToRescheduled,
+  canDeleteGhost,
+  onDeleteGhost,
 }: AppointmentCardProps) {
   const isGhost = a.is_ghost;
   const isActive = ["booked", "confirmed"].includes(a.status);
@@ -146,6 +150,17 @@ export function AppointmentCard({
             </div>
           )}
         </div>
+
+        {/* Ghost delete — admin/super_admin only */}
+        {isGhost && canDeleteGhost && onDeleteGhost && (
+          <button
+            onClick={onDeleteGhost}
+            className="shrink-0 rounded-lg p-1.5 text-slate-300 hover:bg-red-50 hover:text-red-600 dark:text-slate-600 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+            title="Delete ghost record"
+          >
+            <Trash2 size={14} />
+          </button>
+        )}
 
         {/* Right-side agent actions */}
         {!isGhost && (

@@ -84,13 +84,21 @@ export default function AdvisorDashboardPage() {
   const loadAppointments = useCallback(async () => {
     if (!advisorSlot) return;
     setLoading(true);
-    const monthStr = `${year}-${String(month + 1).padStart(2, "0")}`;
-    const res = await fetch(
-      `/api/appointments?month=${monthStr}&advisor_id=${advisorSlot.id}`
-    );
-    const data = await res.json();
-    setAppointments(Array.isArray(data) ? data : []);
-    setLoading(false);
+    try {
+      const monthStr = `${year}-${String(month + 1).padStart(2, "0")}`;
+      const res = await fetch(
+        `/api/appointments?month=${monthStr}&advisor_id=${advisorSlot.id}`
+      );
+      if (!res.ok) { setAppointments([]); return; }
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : [];
+      setAppointments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("loadAppointments failed:", err);
+      setAppointments([]);
+    } finally {
+      setLoading(false);
+    }
   }, [advisorSlot, year, month]);
 
   useEffect(() => { loadAppointments(); }, [loadAppointments]);

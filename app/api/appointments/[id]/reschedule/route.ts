@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -59,7 +62,7 @@ export async function POST(
       customer_name: orig.customer_name,
       customer_phone: orig.customer_phone,
       plate_number: orig.plate_number,
-      branch_id: orig.branch_id,
+      branch_id: body.branch_id || orig.branch_id,
       advisor_id: body.advisor_id,
       appointment_date: body.appointment_date,
       time_slot: body.time_slot || null,

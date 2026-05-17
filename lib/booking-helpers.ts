@@ -2,12 +2,31 @@
 // Booking Helpers
 // ============================================================
 
-// 15-minute slots 08:00 – 18:00
-export const TIME_SLOTS: string[] = [];
-for (let h = 8; h < 18; h++) {
+// ── Time slots ──────────────────────────────────────────────
+
+/** All possible slots 08:00–17:00 in 15-min increments */
+export const ALL_TIME_SLOTS: string[] = [];
+for (let h = 8; h <= 16; h++) {
   for (const m of [0, 15, 30, 45]) {
-    TIME_SLOTS.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+    if (h === 16 && m > 45) break;
+    ALL_TIME_SLOTS.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
   }
+}
+// Keep backward compat alias
+export const TIME_SLOTS = ALL_TIME_SLOTS;
+
+/** Cutoff time per role — last bookable slot (inclusive) */
+export const ROLE_CUTOFF: Record<string, string> = {
+  crm_agent:   "15:00",
+  advisor:     "17:00",
+  admin:       "17:00",
+  super_admin: "17:00",
+};
+
+/** Filter slots available for a given role */
+export function slotsForRole(role: string): string[] {
+  const cutoff = ROLE_CUTOFF[role] || "15:00";
+  return ALL_TIME_SLOTS.filter(s => s <= cutoff);
 }
 
 export const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -101,4 +120,67 @@ export const STATUS_LABELS: Record<string, string> = {
   no_show:     "No Show",
   cancelled:   "Cancelled",
   rescheduled: "Rescheduled",
+};
+
+
+// ── UAE Phone validation ─────────────────────────────────────
+
+const UAE_MOBILE_PREFIXES = ["050","052","054","055","056","058","045","048","056"];
+const UAE_LANDLINE_PREFIXES = ["02","04","06","07","09"];
+
+/** Returns true if string is a valid UAE phone number (9 or 10 digits, correct prefix) */
+export function isValidUAEPhone(phone: string): boolean {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("971")) {
+    // International without +: 9715XXXXXXXX (12 digits)
+    const local = "0" + digits.slice(3);
+    return isValidUAEPhone(local);
+  }
+  for (const p of UAE_MOBILE_PREFIXES) {
+    if (digits.startsWith(p) && digits.length === 10) return true;
+  }
+  for (const p of UAE_LANDLINE_PREFIXES) {
+    if (digits.startsWith(p) && digits.length === 9) return true;
+  }
+  return false;
+}
+
+/** Format phone for display: 0501234567 → 050 123 4567 */
+export function formatPhone(phone: string): string {
+  const d = phone.replace(/\D/g, "");
+  if (d.length === 10) return `${d.slice(0,3)} ${d.slice(3,6)} ${d.slice(6)}`;
+  if (d.length === 9)  return `${d.slice(0,2)} ${d.slice(2,5)} ${d.slice(5)}`;
+  return phone;
+}
+
+// ── UAE Plate codes per emirate ──────────────────────────────
+
+// UAE plate code series per emirate
+// Dubai: letter series (A, B … Z, then AA, AB …)
+// Abu Dhabi: numeric category codes (1–100 range categories, stored as strings)
+// Sharjah / Northern Emirates: letter series (shorter)
+export const PLATE_CODES_BY_EMIRATE: Record<string, string[]> = {
+  DXB: [
+    "", "A","B","C","D","E","F","G","H","I","J","K","L","M",
+    "N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+    "AA","AB","AC","AD","AE","AF","AG","AH","AI","AJ",
+  ],
+  // Abu Dhabi uses numeric category codes (no letter prefix)
+  AUH: [
+    "","1","2","3","4","5","6","7","8","9","10",
+    "11","12","13","14","15","16","17","18","19","20",
+    "21","22","23","24","25","26","27","28","29","30",
+    "40","50","60","70","80","90","100",
+  ],
+  // Sharjah: letter series
+  SHJ: ["","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R"],
+  // RAK: letter series
+  RAK: ["","A","B","C","D","E","F","G","H","I","J","K"],
+  // Ajman: letter series
+  AJM: ["","A","B","C","D","E","F","G","H","I"],
+  // Fujairah: letter series
+  FUJ: ["","A","B","C","D","E","F","G"],
+  // Umm Al Quwain: letter series
+  UAQ: ["","A","B","C","D","E","F"],
+  OTH: [""],
 };

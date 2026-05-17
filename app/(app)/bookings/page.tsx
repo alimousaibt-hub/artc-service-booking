@@ -75,13 +75,26 @@ export default function BookingsPage() {
   const loadAppointments = useCallback(async () => {
     if (!selectedBranch) return;
     setLoadingAppts(true);
-    const monthStr = `${year}-${String(month + 1).padStart(2, "0")}`;
-    const res = await fetch(
-      `/api/appointments?month=${monthStr}&branch_id=${selectedBranch.id}`
-    );
-    const data = await res.json();
-    setAppointments(Array.isArray(data) ? data : []);
-    setLoadingAppts(false);
+    try {
+      const monthStr = `${year}-${String(month + 1).padStart(2, "0")}`;
+      const res = await fetch(
+        `/api/appointments?month=${monthStr}&branch_id=${selectedBranch.id}`
+      );
+      if (!res.ok) {
+        console.error("Appointments API error:", res.status, res.statusText);
+        setAppointments([]);
+        return;
+      }
+      const text = await res.text();
+      if (!text) { setAppointments([]); return; }
+      const data = JSON.parse(text);
+      setAppointments(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("loadAppointments failed:", err);
+      setAppointments([]);
+    } finally {
+      setLoadingAppts(false);
+    }
   }, [selectedBranch, year, month]);
 
   useEffect(() => { loadAppointments(); }, [loadAppointments]);
@@ -320,13 +333,23 @@ export default function BookingsPage() {
                               key={a.id}
                               appointment={a}
                               canEdit={!!canEdit}
+                              canDeleteGhost={profile?.role === "admin" || profile?.role === "super_admin"}
                               onEdit={() => { setEditingAppt(a); setShowForm(true); }}
                               onCancel={() => setCancelAppt(a)}
                               onReschedule={() => setRescheduleAppt(a)}
                               onGoToRescheduled={(newId) => {
-                                // Find the new appointment's date and navigate there
                                 const target = appointments.find(ap => ap.id === newId);
                                 if (target) setSelectedDate(target.appointment_date);
+                              }}
+                              onDeleteGhost={async () => {
+                                if (!confirm("Permanently delete this ghost record?")) return;
+                                const res = await fetch(`/api/appointments/${a.id}`, { method: "DELETE" });
+                                if (res.ok) {
+                                  loadAppointments();
+                                } else {
+                                  const d = await res.json().catch(() => ({}));
+                                  alert("Delete failed: " + (d.error || res.status));
+                                }
                               }}
                             />
                           ))}
@@ -356,8 +379,13 @@ export default function BookingsPage() {
           appointment={rescheduleAppt}
           branches={branches}
           onClose={() => setRescheduleAppt(null)}
-          onSuccess={(newDate) => {
+          onSuccess={(newDate, newBranchId) => {
             setRescheduleAppt(null);
+            // Switch to new branch if inter-branch reschedule
+            if (newBranchId && newBranchId !== selectedBranch?.id) {
+              const target = branches.find(b => b.id === newBranchId);
+              if (target) setSelectedBranch(target);
+            }
             const d = new Date(newDate + "T00:00:00");
             setYear(d.getFullYear());
             setMonth(d.getMonth());

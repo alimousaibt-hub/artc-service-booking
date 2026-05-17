@@ -25,7 +25,7 @@ export default function PendingPage() {
         .eq("id", data.user.id)
         .single();
 
-      if (profile?.status === "active") {
+      if (profile?.status === &ldquo;active&rdquo;) {
         router.push("/dashboard");
       }
 
@@ -75,7 +75,7 @@ export default function PendingPage() {
               </li>
               <li className="flex gap-2">
                 <span>4.</span>
-                <span>You&apos;ll see this message update automatically</span>
+                <span>You'll see this message update automatically</span>
               </li>
             </ul>
           </div>

@@ -1,12 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
+
 export async function GET() {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("branches")
-    .select("*")
+    .select("id, name, code, is_active, closed_days, created_at")
     .eq("is_active", true)
     .order("name");
 
