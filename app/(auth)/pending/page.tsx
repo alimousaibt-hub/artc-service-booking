@@ -75,7 +75,7 @@ export default function PendingPage() {
               </li>
               <li className="flex gap-2">
                 <span>4.</span>
-                <span>You'll see this message update automatically</span>
+                <span>You&apos;ll see this message update automatically</span>
               </li>
             </ul>
           </div>
