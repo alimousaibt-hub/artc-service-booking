@@ -9,7 +9,7 @@ import { CustomerSearch } from "@/components/booking/customer-search";
 import { createClient } from "@/lib/supabase/client";
 import {
   getDaysInMonth, toDateString, DAYS_OF_WEEK, MONTHS,
-  formatDateDisplay, STATUS_COLORS,
+  formatDateDisplay,
 } from "@/lib/booking-helpers";
 import { Branch, Profile } from "@/types/database";
 import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
