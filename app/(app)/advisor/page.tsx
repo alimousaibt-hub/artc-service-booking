@@ -70,7 +70,7 @@ export default function AdvisorDashboardPage() {
         .single()
         .then(({ data: slot }) => {
           if (slot) {
-            setAdvisorSlot(slot as AdvisorSlot);
+            setAdvisorSlot(slot as unknown as AdvisorSlot);
           } else {
             setNotLinked(true);
             setLoading(false);
