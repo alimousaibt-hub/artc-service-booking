@@ -3,7 +3,7 @@
 import { AppLayout } from "@/components/app-layout";
 import { AppointmentCard } from "@/components/booking/appointment-card";
 import { createClient } from "@/lib/supabase/client";
-import { toDateString, formatDateDisplay, MONTHS, getDaysInMonth, DAYS_OF_WEEK, STATUS_COLORS } from "@/lib/booking-helpers";
+import { toDateString, formatDateDisplay, MONTHS, getDaysInMonth, DAYS_OF_WEEK } from "@/lib/booking-helpers";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 
