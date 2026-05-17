@@ -12,7 +12,7 @@ import {
   formatDateDisplay,
 } from "@/lib/booking-helpers";
 import { Branch, Profile } from "@/types/database";
-import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 
 interface Appointment {
