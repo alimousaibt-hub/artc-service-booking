@@ -25,7 +25,7 @@ export default function PendingPage() {
         .eq("id", data.user.id)
         .single();
 
-      if (profile?.status === &ldquo;active&rdquo;) {
+      if (profile?.status === "active") {
         router.push("/dashboard");
       }
 
@@ -71,7 +71,7 @@ export default function PendingPage() {
               </li>
               <li className="flex gap-2">
                 <span>3.</span>
-                <span>Your account status will change to &ldquo;active&rdquo;</span>
+                <span>Your account status will change to "active"</span>
               </li>
               <li className="flex gap-2">
                 <span>4.</span>
