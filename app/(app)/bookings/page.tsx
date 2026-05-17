@@ -2,6 +2,8 @@
 
 import { AppLayout } from "@/components/app-layout";
 import { AppointmentForm } from "@/components/booking/appointment-form";
+import { CancelModal } from "@/components/booking/cancel-modal";
+import { RescheduleModal } from "@/components/booking/reschedule-modal";
 import { AppointmentCard } from "@/components/booking/appointment-card";
 import { CustomerSearch } from "@/components/booking/customer-search";
 import { createClient } from "@/lib/supabase/client";
@@ -46,6 +48,8 @@ export default function BookingsPage() {
   const [loadingAppts, setLoadingAppts] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingAppt, setEditingAppt] = useState<Appointment | null>(null);
+  const [cancelAppt, setCancelAppt] = useState<Appointment | null>(null);
+  const [rescheduleAppt, setRescheduleAppt] = useState<Appointment | null>(null);
 
   // Load current user
   useEffect(() => {
@@ -111,11 +115,16 @@ export default function BookingsPage() {
     else setMonth((m) => m + 1);
   };
 
-  const handleSearchNavigate = (date: string) => {
+  const handleSearchNavigate = (date: string, branchId?: string) => {
     const d = new Date(date + "T00:00:00");
     setYear(d.getFullYear());
     setMonth(d.getMonth());
     setSelectedDate(date);
+    // Switch to the correct branch so the appointment is visible
+    if (branchId) {
+      const target = branches.find((b) => b.id === branchId);
+      if (target) setSelectedBranch(target);
+    }
   };
 
   return (
@@ -311,9 +320,13 @@ export default function BookingsPage() {
                               key={a.id}
                               appointment={a}
                               canEdit={!!canEdit}
-                              onEdit={() => {
-                                setEditingAppt(a);
-                                setShowForm(true);
+                              onEdit={() => { setEditingAppt(a); setShowForm(true); }}
+                              onCancel={() => setCancelAppt(a)}
+                              onReschedule={() => setRescheduleAppt(a)}
+                              onGoToRescheduled={(newId) => {
+                                // Find the new appointment's date and navigate there
+                                const target = appointments.find(ap => ap.id === newId);
+                                if (target) setSelectedDate(target.appointment_date);
                               }}
                             />
                           ))}
@@ -327,6 +340,32 @@ export default function BookingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Cancel modal */}
+      {cancelAppt && (
+        <CancelModal
+          appointment={cancelAppt}
+          onClose={() => setCancelAppt(null)}
+          onSuccess={() => { setCancelAppt(null); loadAppointments(); }}
+        />
+      )}
+
+      {/* Reschedule modal */}
+      {rescheduleAppt && (
+        <RescheduleModal
+          appointment={rescheduleAppt}
+          branches={branches}
+          onClose={() => setRescheduleAppt(null)}
+          onSuccess={(newDate) => {
+            setRescheduleAppt(null);
+            const d = new Date(newDate + "T00:00:00");
+            setYear(d.getFullYear());
+            setMonth(d.getMonth());
+            setSelectedDate(newDate);
+            loadAppointments();
+          }}
+        />
+      )}
 
       {/* Create / Edit modal */}
       {showForm && (

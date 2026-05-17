@@ -20,14 +20,17 @@ create table if not exists public.branch_day_capacity (
 
 alter table public.branch_day_capacity enable row level security;
 
-create policy if not exists "Active users can view day capacity"
+drop policy if exists "Active users can view day capacity" on public.branch_day_capacity;
+drop policy if exists "Admins can manage day capacity" on public.branch_day_capacity;
+
+create policy "Active users can view day capacity"
   on public.branch_day_capacity for select
   using (exists (
     select 1 from public.profiles p
     where p.id = auth.uid() and p.status = 'active'
   ));
 
-create policy if not exists "Admins can manage day capacity"
+create policy "Admins can manage day capacity"
   on public.branch_day_capacity for all
   using (exists (
     select 1 from public.profiles p
@@ -123,48 +126,48 @@ on conflict (branch_id, day_of_week) do update set capacity = excluded.capacity;
 
 -- Sharjah: Omar, Hamdan
 insert into public.service_advisors (branch_id, name, daily_capacity, is_active)
-select b.id, adv, 28 from public.branches b
+select b.id, adv, 28, true from public.branches b
 cross join unnest(array['Omar','Hamdan']) as adv
 where b.code = 'SHJ'
 on conflict do nothing;
 
 -- Deira: Ramy, Chona, Churchill
 insert into public.service_advisors (branch_id, name, daily_capacity, is_active)
-select b.id, adv, 28 from public.branches b
+select b.id, adv, 28, true from public.branches b
 cross join unnest(array['Ramy','Chona','Churchill']) as adv
 where b.code = 'DEI'
 on conflict do nothing;
 
 -- SZR: Khalid, Ehsan, Michille
 insert into public.service_advisors (branch_id, name, daily_capacity, is_active)
-select b.id, adv, 42 from public.branches b
+select b.id, adv, 42, true from public.branches b
 cross join unnest(array['Khalid','Ehsan','Michille']) as adv
 where b.code = 'SZR'
 on conflict do nothing;
 
 -- Mussafah: Hossam, Dayanand
 insert into public.service_advisors (branch_id, name, daily_capacity, is_active)
-select b.id, adv, 28 from public.branches b
+select b.id, adv, 28, true from public.branches b
 cross join unnest(array['Hossam','Dayanand']) as adv
 where b.code = 'MUS'
 on conflict do nothing;
 
 -- Al Ain: Hammad, Fazil
 insert into public.service_advisors (branch_id, name, daily_capacity, is_active)
-select b.id, adv, 15 from public.branches b
+select b.id, adv, 15, true from public.branches b
 cross join unnest(array['Hammad','Fazil']) as adv
 where b.code = 'AIN'
 on conflict do nothing;
 
 -- Fujairah: Sharif
 insert into public.service_advisors (branch_id, name, daily_capacity, is_active)
-select b.id, 'Sharif', 5 from public.branches b
+select b.id, 'Sharif', 5, true from public.branches b
 where b.code = 'FUJ'
 on conflict do nothing;
 
 -- RAK: Arun, Hanan
 insert into public.service_advisors (branch_id, name, daily_capacity, is_active)
-select b.id, adv, 15 from public.branches b
+select b.id, adv, 15, true from public.branches b
 cross join unnest(array['Arun','Hanan']) as adv
 where b.code = 'RAK'
 on conflict do nothing;

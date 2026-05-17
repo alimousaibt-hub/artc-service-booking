@@ -44,6 +44,20 @@ export default function AdvisorDashboardPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const handleAction = async (apptId: string, action: "confirm" | "complete" | "no_show") => {
+    const res = await fetch(`/api/appointments/${apptId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setAppointments(prev =>
+        prev.map(a => a.id === apptId ? { ...a, ...updated } : a)
+      );
+    }
+  };
+
   // Load advisor slot for this user
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -231,7 +245,8 @@ export default function AdvisorDashboardPage() {
                     key={a.id}
                     appointment={a}
                     canEdit={false}
-                    onEdit={() => {}}
+                    isAdvisor={true}
+                    onAction={(action) => handleAction(a.id, action)}
                   />
                 ))
               )}

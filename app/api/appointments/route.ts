@@ -54,10 +54,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  // Capacity check
-  const { data: existingCount } = await supabase
+  // Get existing active appointments for this advisor on this date
+  const { data: existingAppts } = await supabase
     .from("appointments")
-    .select("id", { count: "exact" })
+    .select("id, time_slot")
     .eq("advisor_id", body.advisor_id)
     .eq("appointment_date", body.appointment_date)
     .eq("is_ghost", false)
@@ -77,13 +77,24 @@ export async function POST(req: NextRequest) {
     .single();
 
   const capacity = override?.capacity ?? advisor?.daily_capacity ?? 10;
-  const booked = existingCount?.length ?? 0;
+  const booked = existingAppts?.length ?? 0;
 
   if (booked >= capacity) {
     return NextResponse.json(
       { error: "Advisor is fully booked for this date" },
       { status: 409 }
     );
+  }
+
+  // Time slot uniqueness: each advisor handles 1 vehicle per 15-min slot
+  if (body.time_slot) {
+    const slotTaken = existingAppts?.some((a) => a.time_slot === body.time_slot);
+    if (slotTaken) {
+      return NextResponse.json(
+        { error: `Time slot ${body.time_slot} is already booked for this advisor` },
+        { status: 409 }
+      );
+    }
   }
 
   const { data, error } = await supabase

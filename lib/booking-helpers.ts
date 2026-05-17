@@ -1,13 +1,14 @@
 // ============================================================
-// Booking Helpers — time slots, capacity, date utilities
+// Booking Helpers
 // ============================================================
 
-export const TIME_SLOTS = [
-  "08:00", "08:30", "09:00", "09:30", "10:00", "10:30",
-  "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-  "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
-  "17:00", "17:30",
-];
+// 15-minute slots 08:00 – 18:00
+export const TIME_SLOTS: string[] = [];
+for (let h = 8; h < 18; h++) {
+  for (const m of [0, 15, 30, 45]) {
+    TIME_SLOTS.push(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`);
+  }
+}
 
 export const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const MONTHS = [
@@ -15,7 +16,6 @@ export const MONTHS = [
   "July","August","September","October","November","December",
 ];
 
-/** Get all days in a given month as Date objects */
 export function getDaysInMonth(year: number, month: number): Date[] {
   const days: Date[] = [];
   const date = new Date(year, month, 1);
@@ -26,7 +26,7 @@ export function getDaysInMonth(year: number, month: number): Date[] {
   return days;
 }
 
-/** Format a Date to YYYY-MM-DD string (uses local time, not UTC) */
+/** Local-time YYYY-MM-DD — never uses UTC to avoid timezone shift */
 export function toDateString(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, "0");
@@ -34,25 +34,57 @@ export function toDateString(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
-/** Format a date string to display format e.g. "15 Jun 2026" */
 export function formatDateDisplay(dateStr: string): string {
   const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
 
-/** Format time slot to 12-hour for display */
 export function formatTime(slot: string): string {
   const [h, m] = slot.split(":").map(Number);
   const ampm = h >= 12 ? "PM" : "AM";
   const hour = h % 12 || 12;
-  return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+  return `${hour}:${String(m).padStart(2, "0")} ${ampm}`;
 }
 
-/** Status color mapping */
+// ── Plate number helpers ────────────────────────────────────
+
+export const UAE_EMIRATES = [
+  { code: "DXB", label: "Dubai" },
+  { code: "AUH", label: "Abu Dhabi" },
+  { code: "SHJ", label: "Sharjah" },
+  { code: "RAK", label: "Ras Al Khaimah" },
+  { code: "AJM", label: "Ajman" },
+  { code: "FUJ", label: "Fujairah" },
+  { code: "UAQ", label: "Umm Al Quwain" },
+  { code: "OTH", label: "Other / Non-UAE" },
+];
+
+/** Build stored plate string: emirate + code + number, no spaces. e.g. DXBAA29999 */
+export function buildPlate(emirate: string, code: string, num: string): string {
+  return `${emirate}${code.toUpperCase().replace(/\s/g, "")}${num.replace(/\s/g, "")}`;
+}
+
+/** Parse stored plate back into parts for display */
+export function parsePlate(plate: string | null): { emirate: string; code: string; num: string } {
+  if (!plate) return { emirate: "DXB", code: "", num: "" };
+  const emirateMatch = UAE_EMIRATES.find((e) => plate.startsWith(e.code));
+  if (!emirateMatch) return { emirate: "OTH", code: "", num: plate };
+  const rest = plate.slice(emirateMatch.code.length);
+  // Letters = code, digits = number
+  const match = rest.match(/^([A-Z]*)(\d+)$/);
+  if (match) return { emirate: emirateMatch.code, code: match[1], num: match[2] };
+  return { emirate: emirateMatch.code, code: "", num: rest };
+}
+
+/** Format plate for display: DXBAA29999 → DXB AA 29999 */
+export function displayPlate(plate: string | null): string {
+  if (!plate) return "";
+  const { emirate, code, num } = parsePlate(plate);
+  return [emirate, code, num].filter(Boolean).join(" ");
+}
+
+// ── Status helpers ──────────────────────────────────────────
+
 export const STATUS_COLORS: Record<string, string> = {
   booked:      "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300",
   confirmed:   "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",

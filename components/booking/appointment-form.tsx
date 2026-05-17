@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Loader2 } from "lucide-react";
 import { TIME_SLOTS, formatTime } from "@/lib/booking-helpers";
+import { PlateInput } from "@/components/booking/plate-input";
 import { Branch, ServiceAdvisor } from "@/types/database";
 
 interface AdvisorWithCapacity extends ServiceAdvisor {
@@ -202,15 +203,13 @@ export function AppointmentForm({
                   className="w-full"
                 />
               </div>
-              <div>
+              <div className="col-span-2">
                 <label className="block text-sm text-slate-600 dark:text-slate-400 mb-1">
                   Plate number
                 </label>
-                <input
+                <PlateInput
                   value={form.plate_number}
-                  onChange={(e) => set("plate_number", e.target.value.toUpperCase())}
-                  placeholder="A 12345"
-                  className="w-full"
+                  onChange={(v) => set("plate_number", v)}
                 />
               </div>
             </div>
