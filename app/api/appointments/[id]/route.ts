@@ -52,6 +52,16 @@ export async function PATCH(
       is_ghost: true,
       ghost_reason: "cancelled",
     };
+    // Notify original creator if someone else cancelled
+    if (appt.booked_by && appt.booked_by !== user.id) {
+      await supabase.from("notifications").insert({
+        user_id: appt.booked_by,
+        type: "appointment_cancelled",
+        title: "Your appointment was cancelled",
+        body: `${appt.customer_name} on ${appt.appointment_date} was cancelled${reason ? ` — ${reason}` : ""}.`,
+        appointment_id: id,
+      });
+    }
   } else {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   }

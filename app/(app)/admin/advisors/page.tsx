@@ -76,10 +76,8 @@ export default function AdvisorsPage() {
 
   const handleDelete = async (a: Advisor) => {
     if (!confirm(`Delete advisor "${a.name}"? This cannot be undone.`)) return;
-    const res = await fetch("/api/advisors", {
+    const res = await fetch(`/api/advisors?id=${a.id}`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: a.id }),
     });
     if (res.ok) setAdvisors(prev => prev.filter(x => x.id !== a.id));
     else { const d = await res.json(); setError(d.error); }

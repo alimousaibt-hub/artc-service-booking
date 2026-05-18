@@ -91,11 +91,19 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   const supabase = await createClient();
-  const p = await requireAdmin(supabase);
-  if (!p || !["admin", "super_admin"].includes(p.role)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: profile } = await supabase
+    .from("profiles").select("role, status").eq("id", user.id).single();
+  if (!profile || profile.status !== "active" || !["admin","super_admin"].includes(profile.role))
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+
   const { error } = await supabase.from("service_advisors").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });

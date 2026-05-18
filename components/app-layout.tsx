@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Menu, LogOut, Sun, Moon } from "lucide-react";
+import { NotificationBell } from "@/components/notification-bell";
 import { Profile } from "@/types/database";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -176,12 +177,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
-                {theme === "dark" ? (
-                  <Sun size={20} />
-                ) : (
-                  <Moon size={20} />
-                )}
+                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
               </button>
+
+              {/* Notification bell */}
+              {profile && (
+                <NotificationBell userId={profile.id} />
+              )}
 
               {/* Logout button */}
               <button

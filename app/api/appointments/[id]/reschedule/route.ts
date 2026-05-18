@@ -92,5 +92,16 @@ export async function POST(
 
   if (ghostErr) return NextResponse.json({ error: ghostErr.message }, { status: 500 });
 
+  // Notify original creator if someone else rescheduled
+  if (orig.booked_by && orig.booked_by !== user.id) {
+    await supabase.from("notifications").insert({
+      user_id: orig.booked_by,
+      type: "appointment_rescheduled",
+      title: "Your appointment was rescheduled",
+      body: `${orig.customer_name} was rescheduled to ${body.appointment_date}${body.reason ? ` — ${body.reason}` : ""}.`,
+      appointment_id: newAppt.id,
+    });
+  }
+
   return NextResponse.json({ original_id: orig.id, new_id: newAppt.id }, { status: 201 });
 }

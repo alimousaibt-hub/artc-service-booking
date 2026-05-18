@@ -9,10 +9,10 @@ import { CustomerSearch } from "@/components/booking/customer-search";
 import { createClient } from "@/lib/supabase/client";
 import {
   getDaysInMonth, toDateString, DAYS_OF_WEEK, MONTHS,
-  formatDateDisplay,
+  formatDateDisplay, STATUS_COLORS,
 } from "@/lib/booking-helpers";
 import { Branch, Profile } from "@/types/database";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 
 interface Appointment {
