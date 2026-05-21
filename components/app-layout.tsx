@@ -128,14 +128,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                 Advisors
               </NavLink>
-              <NavLink href="/admin/analytics" active={pathname === "/admin/analytics"}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-7"/></svg>
-                Analytics
-              </NavLink>
-              <NavLink href="/admin/holidays" active={pathname === "/admin/holidays"}>
-                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01"/></svg>
-                Holidays
-              </NavLink>
               <NavLink href="/admin/capacity" active={pathname === "/admin/capacity"}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/></svg>
                 Capacity
@@ -181,41 +173,80 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main content */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Top bar */}
-        <header className="border-b border-slate-200 bg-white px-4 py-4 dark:border-slate-700 dark:bg-slate-900 sm:px-6">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden"
-            >
-              <Menu size={20} />
-            </button>
+{/* Top bar */}
+<header
+  className="
+    sticky top-0 z-30
+    border-b border-slate-200
+    bg-white/90 backdrop-blur
+    px-4 py-4
+    dark:border-slate-700
+    dark:bg-slate-900/90
+    sm:px-6
+  "
+>
+  <div className="flex items-center justify-between">
+    <button
+      onClick={() => setSidebarOpen(!sidebarOpen)}
+      className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden"
+    >
+      <Menu size={20} />
+    </button>
 
-            <div className="flex items-center gap-4">
-              {/* Theme toggle */}
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
-              >
-                {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
+    <div className="flex items-center gap-3 ml-auto">
+      {/* Theme toggle */}
+      <button
+        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+        className="
+          rounded-xl border border-slate-200
+          bg-white p-2.5 shadow-sm
+          transition-all
+          hover:bg-slate-100 hover:shadow
+          dark:border-slate-700
+          dark:bg-slate-800
+          dark:hover:bg-slate-700
+        "
+      >
+        {theme === "dark" ? (
+          <Sun size={18} className="text-amber-500" />
+        ) : (
+          <Moon size={18} className="text-slate-600" />
+        )}
+      </button>
 
-              {/* Notification bell */}
-              {profile && (
-                <NotificationBell userId={profile.id} />
-              )}
+      {/* Notifications */}
+      <div className="relative z-[60]">
+        {profile && <NotificationBell userId={profile.id} />}
+      </div>
 
-              {/* Logout button */}
-              <button
-                onClick={handleLogout}
-                className="btn btn-secondary flex items-center gap-2"
-              >
-                <LogOut size={16} />
-                Sign out
-              </button>
-            </div>
-          </div>
-        </header>
+      {/* User panel */}
+      <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div className="hidden sm:block text-right">
+          <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
+            {profile.full_name || "User"}
+          </p>
+          <p className="text-xs text-slate-500">
+            {profile.role.replace("_", " ")}
+          </p>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="
+            flex items-center gap-2
+            rounded-lg px-3 py-2
+            text-red-600
+            hover:bg-red-50
+            dark:hover:bg-red-900/20
+          "
+        >
+          <LogOut size={16} />
+          <span className="hidden md:inline">Sign out</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
 
         {/* Page content */}
         <main className="flex-1 overflow-auto p-4 sm:p-6">{children}</main>
