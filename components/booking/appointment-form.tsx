@@ -62,8 +62,21 @@ export function AppointmentForm({
 
   const [advisors, setAdvisors] = useState<AdvisorWithCapacity[]>([]);
   const [loadingAdvisors, setLoadingAdvisors] = useState(false);
+  const [holidayDates, setHolidayDates] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Load holidays for the branch
+  useEffect(() => {
+    if (!form.branch_id) return;
+    const year = new Date().getFullYear();
+    fetch(`/api/holidays?branch_id=${form.branch_id}&year=${year}`)
+      .then(r => r.json())
+      .then((data: { date: string }[]) => {
+        setHolidayDates(new Set((data || []).map(h => h.date)));
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.branch_id]);
 
   // Get closed days for selected branch
   const selectedBranch = branches.find(b => b.id === form.branch_id);
@@ -71,6 +84,17 @@ export function AppointmentForm({
 
   // Build min date (today)
   const minDate = toDateString(new Date());
+
+  // Load holidays for selected branch
+  useEffect(() => {
+    if (!form.branch_id) return;
+    fetch(`/api/holidays?branch_id=${form.branch_id}`)
+      .then(r => r.json())
+      .then((data: { date: string }[]) => {
+        setHolidayDates(new Set((data || []).map(h => h.date)));
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.branch_id]);
 
   // Load advisors when branch or date changes
   useEffect(() => {
@@ -93,17 +117,27 @@ export function AppointmentForm({
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
 
-  // Check if a date string falls on a closed day
+  // Check if a date string falls on a closed day or holiday
   const isDateClosed = (dateStr: string): boolean => {
     if (!dateStr) return false;
     const dow = new Date(dateStr + "T00:00:00").getDay();
-    return closedDays.includes(dow);
+    if (closedDays.includes(dow)) return true;
+    if (holidayDates.has(dateStr)) return true;
+    return false;
+  };
+
+  const getDateBlockReason = (dateStr: string): string => {
+    if (!dateStr) return "";
+    const dow = new Date(dateStr + "T00:00:00").getDay();
+    if (closedDays.includes(dow)) return "Service centre is closed on this day.";
+    if (holidayDates.has(dateStr)) return "This date is a holiday.";
+    return "";
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     if (isDateClosed(val)) {
-      setError(`This service centre is closed on that day of the week.`);
+      setError(getDateBlockReason(val) || "This date is not available for booking.");
       return;
     }
     setError(null);

@@ -88,7 +88,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               Service Bookings
             </p>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              v0.2 — Phase 2
+              v1.0 — Phase 4
             </p>
           </div>
 
@@ -127,6 +127,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <NavLink href="/admin/advisors" active={pathname === "/admin/advisors"}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
                 Advisors
+              </NavLink>
+              <NavLink href="/admin/analytics" active={pathname === "/admin/analytics"}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-7"/></svg>
+                Analytics
+              </NavLink>
+              <NavLink href="/admin/holidays" active={pathname === "/admin/holidays"}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01"/></svg>
+                Holidays
+              </NavLink>
+              <NavLink href="/admin/capacity" active={pathname === "/admin/capacity"}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/></svg>
+                Capacity
+              </NavLink>
+              <NavLink href="/admin/analytics" active={pathname === "/admin/analytics"}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                Analytics
+              </NavLink>
+              <NavLink href="/admin/holidays" active={pathname === "/admin/holidays"}>
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15h.01M12 15h.01M16 15h.01"/></svg>
+                Holidays
               </NavLink>
             </>
           )}
